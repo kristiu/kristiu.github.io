@@ -124,7 +124,7 @@
 <h1 id="architecture-of-id-software"><a name="home">ARCHITECTURE OF ID-SOFTWARE</a></h1>
 <p>Document version: 0.6<br />
 Software version: 3.12<br />
-Last updated: 09.02.2016</p>
+Last updated: 15.02.2016</p>
 <h1 id="introduction"><a name="_intro">Introduction</a></h1>
 <p>The purpose of this document is to describe the architecture of ID-software. </p>
 <p><strong>ID-software</strong> is a collection of software components offering support for PKI-based functionality, i.e. operations with different cryptographic tokens (e.g. eID cards), handling digitally signed documents, file encryption/decryption and signing and authentication in web environment. The ID-software comprises end-user applications, software libraries, web components, drivers for communicating with the cryptographic tokens and other complementary components.  </p>
@@ -995,6 +995,7 @@ Note that not all of the external base libraries are included in the component m
 </ul>
 </li>
 </ul>
+<p><a name="_ID-card_utility"></a></p>
 <h3 id="id-card-utility">ID-card utility</h3>
 <p><img alt="" src="./index_files/comp_utility.png" /><br />
 <strong>Figure: Components of ID-card utility</strong></p>
@@ -1316,7 +1317,7 @@ Note that not all of the external base libraries are included in the component m
 <ul>
 <li>CDigiDoc API: see chap. <a href="#_CDigiDoc_library’s_interfaces">CDigiDoc library’s interfaces</a></li>
 </ul>
-<h3 id="ndigidoc-librarys-interfaces"><a name="_Toc398635108"></a><a name="_Toc398633406"></a><a name="_Toc398590582"></a><a name="_NDigiDoc_library’s_interfaces"></a>NDigiDoc library’s interfaces</h3>
+<h3 id="ndigidoc-librarys-interfaces"><a name="_NDigiDoc_library’s_interfaces"></a>NDigiDoc library’s interfaces</h3>
 <p>Provided:</p>
 <ul>
 <li><a href="http://id.ee/public/NDigiDoc.pdf">NDigiDoc API</a><ul>
@@ -1757,7 +1758,7 @@ Note that not all of the external base libraries are included in the component m
 <p>The central configuration service's purpose is to enable on-line and central management of ID-software components configuration settings.</p>
 <p><img alt="" src="./index_files/comp_central_configuration_v02.png" /> </p>
 <p><strong>Figure: Central configuration service's client and server components</strong></p>
-<p><strong>Table: Software libraries and their components</strong></p>
+<p><strong>Table: Central configuration service's components</strong></p>
 <table>
 <thead>
 <tr>
@@ -1769,34 +1770,106 @@ Note that not all of the external base libraries are included in the component m
 <tbody>
 <tr>
 <td>ID-card Utility</td>
-<td>TODO</td>
+<td>ID-card Utility requests configuration data from the central configuration client component. Described in chap. <a href="#_ID-card_utility">ID-card Utility</a></td>
 <td>RIA/SK</td>
 </tr>
 <tr>
 <td>DigiDoc3 Client</td>
-<td>TODO</td>
+<td>DigiDoc3 Client requests configuration data from the central configuration client component. Described in chap. <a href="#_DigiDoc3_Client">DigiDoc3 Client</a></td>
 <td>RIA/SK</td>
 </tr>
 <tr>
-<td>Time-stamping service</td>
-<td>Described in chap. <a href="#_DigiDoc3_Client">DigiDoc3 Client</a></td>
-<td>-</td>
+<td>Central configuration client</td>
+<td>Central Configuration Client component manages the configuration file validation and updating processes, returns the validated configuration data to the Requesting Application (DigiDoc3 Client or Utility program) and if necessary, updates the data from Central Configuration Server</td>
+<td>RIA/SK</td>
 </tr>
 <tr>
-<td>OCSP service</td>
-<td>Described in chap. <a href="#_DigiDoc3_Client">DigiDoc3 Client</a></td>
-<td>-</td>
+<td>Central configuration service</td>
+<td>Central Configuration Server component provides configuration data on-line to the Central Configuration Client component</td>
+<td>RIA</td>
+</tr>
+<tr>
+<td>config.json</td>
+<td>The central configuration file is named config.json, the file is in JSON format. The configuration file is signed</td>
+<td>RIA/SK</td>
+</tr>
+<tr>
+<td>config.rsa</td>
+<td>Stores the central configuration file's signature value.</td>
+<td>RIA/SK</td>
+</tr>
+<tr>
+<td>config.pub</td>
+<td>Public key used for validating the central configuration file's signature value.</td>
+<td>RIA/SK</td>
+</tr>
+<tr>
+<td>QT-commons</td>
+<td>Contains common code of DigiDoc3 Client and ID-card Utility program.</td>
+<td>RIA/SK</td>
+</tr>
+<tr>
+<td>Libdigidocpp</td>
+<td>DigiDoc3 Client's base library, also uses the central configuration file's settings. Described in chap. <a href="#_comp_libraries">Software libraries</a></td>
+<td>RIA/SK</td>
 </tr>
 </tbody>
 </table>
-<p>/TODO/</p>
-<p><a name="_comp_central_conf_interfaces"></a></p>
-<h3 id="central-configuration-services-interfaces">Central configuration service's interfaces</h3>
+<p><a name="_comp_central_conf_client_interfaces"></a></p>
+<h3 id="central-configuration-client-components-interfaces">Central configuration client component's interfaces</h3>
+<p>Provided:</p>
+<ul>
+<li><a href="https://github.com/open-eid/qt-common/blob/master/Configuration.cpp">Central Configuration Client API (qt-common component)</a><ul>
+<li>User: DigiDoc3 Client, ID-card Utility</li>
+<li>Accessible with: C++</li>
+</ul>
+</li>
+</ul>
+<p>Required:</p>
+<ul>
+<li>Central configuration file config.json from the central configuration server</li>
+<li>Central configuration file config.json from the local file system (or the local installation package)</li>
+<li>Central configuration file's signature config.rsa from the central configuration server</li>
+<li>Central configuration file's signature config.rsa from the local file system (or the local installation package)</li>
+<li>Client operating system's registry/environment variables<ul>
+<li>LastCheck entry</li>
+</ul>
+</li>
+<li>Base libraries:<ul>
+<li>QT framework</li>
+<li>OpenSSL</li>
+</ul>
+</li>
+</ul>
+<p><a name="_comp_central_conf_server_interfaces"></a></p>
+<h3 id="central-configuration-server-components-interfaces">Central configuration server component's interfaces</h3>
+<p>Provided:</p>
+<ul>
+<li>Central configuration file config.json<ul>
+<li>Used by: central configuration client component</li>
+<li>Accessible from: <a href="https://id.eesti.ee/config.json">https://id.eesti.ee/config.json</a></li>
+</ul>
+</li>
+<li>Central configuration file's signature file config.rsa<ul>
+<li>Used by: central configuration client component</li>
+<li>Accessible from: <a href="https://id.eesti.ee/config.rsa">https://id.eesti.ee/config.rsa</a></li>
+</ul>
+</li>
+<li>Central configuration file's public key file config.pub<ul>
+<li>Used by: central configuration client component</li>
+<li>Accessible from: <a hreef="https://id.eesti.ee/config.pub">https://id.eesti.ee/config.pub</a> </li>
+</ul>
+</li>
+</ul>
 <p><a name="_comp_external"></a></p>
 <h2 id="interfaces-with-external-services">Interfaces with external services</h2>
+<p>The following chapter describes interfaces that different ID-software components may have with external services. Relatsionships with the external services are depicted in different ID-software component models above.</p>
+<h4 id="central-configuration-services-interface">Central configuration service's interface</h4>
+<ul>
+<li>Central configuration service is described in a separate chapter, see <a href="#_comp_central_conf">Central configuration service</a>. </li>
+</ul>
 <p><a name="_ID-updater_interface"></a></p>
-<h3 id="id-updater-interface">ID-updater interface</h3>
-<p>Interface’s properties:</p>
+<h4 id="id-updater-interface">ID-updater interface</h4>
 <ul>
 <li>User: DigiDoc3 Client</li>
 <li>Accessible with: HTTPS protocol</li>
@@ -1807,38 +1880,33 @@ Note that not all of the external base libraries are included in the component m
 </ul>
 </li>
 </ul>
-<h3 id="kill-switch-service-interface-v39-v311"><a name="_Kill_switch_service"></a>Kill switch service interface (v3.9-v3.11)</h3>
-<p>Interface’s properties:</p>
+<h4 id="kill-switch-service-interface-v39-v311"><a name="_Kill_switch_service"></a>Kill switch service interface (v3.9-v3.11)</h4>
 <ul>
 <li>User: DigiDoc3 Client</li>
 <li>Accessible with: XML file sent over HTTPS protocol</li>
 <li>Accessible from: <a href="https://installer.id.ee/media/killswitch/products.xml">https://installer.id.ee/media/killswitch/products.xml</a></li>
 </ul>
-<h3 id="digidocservice-web-service-interface"><a name="_DigiDocService_web_service"></a>DigiDocService web service interface</h3>
-<p>Interface’s properties:</p>
+<h4 id="digidocservice-web-service-interface"><a name="_DigiDocService_web_service"></a>DigiDocService web service interface</h4>
 <ul>
 <li>User: DigiDoc3 Client</li>
 <li>Accessible with: SOAP 1.0-encoded over HTTPS</li>
 <li>Accessible from: <a href="https://digidocservice.sk.ee/">https://digidocservice.sk.ee</a></li>
 <li>Documentation: <a href="http://www.sk.ee/upload/files/DigiDocService_spec_eng.pdf">http://www.sk.ee/upload/files/DigiDocService_spec_eng.pdf</a></li>
 </ul>
-<h3 id="error-reports-repository-interface"><a name="_Ref398569378"></a><a name="_Error_reports_repository"></a>Error reports repository interface</h3>
-<p>Interface’s properties:</p>
+<h4 id="error-reports-repository-interface"><a name="_Error_reports_repository"></a>Error reports repository interface</h4>
 <ul>
 <li>User: DigiDoc3 Client, ID-utility</li>
 <li>Accessible with: HTTPS protocol</li>
 <li>Accessible from: <a href="https://cr.eesti.ee/">https://cr.eesti.ee</a></li>
 </ul>
-<h3 id="ldap-directory-interface"><a name="_LDAP_directory_interface"></a>LDAP directory interface</h3>
-<p>Interface’s properties:</p>
+<h4 id="ldap-directory-interface"><a name="_LDAP_directory_interface"></a>LDAP directory interface</h4>
 <ul>
 <li>User: DigiDoc3 Client</li>
 <li>Accessible with: LDAP protocol</li>
 <li>Accessible from: ldap.sk.ee:389</li>
 <li>Documentation: <a href="https://sk.ee/en/repository/ldap/ldap-kataloogi-kasutamine/">https://sk.ee/en/repository/ldap/ldap-kataloogi-kasutamine/</a></li>
 </ul>
-<h3 id="tsl-repositories-interfaces"><a name="_TSL_repositories’_interfaces"></a>TSL repositories’ interfaces</h3>
-<p>Interface’s properties:</p>
+<h4 id="tsl-repositories-interfaces"><a name="_TSL_repositories’_interfaces"></a>TSL repositories’ interfaces</h4>
 <ul>
 <li>User: Libdigidocpp, DigiDoc4j</li>
 <li>Accessible with: HTTPS protocol</li>
@@ -1853,8 +1921,7 @@ Note that not all of the external base libraries are included in the component m
 <p>Documentation: <a href="http://www.etsi.org/deliver/etsi_ts/119600_119699/119612/01.02.01_60/ts_119612v010201p.pdf">http://www.etsi.org/deliver/etsi_ts/119600_119699/119612/01.02.01_60/ts_119612v010201p.pdf</a></p>
 </li>
 </ul>
-<h3 id="time-stamping-service-interface"><a name="_Time-stamping_service_interface"></a>Time-stamping service interface</h3>
-<p>Interface’s properties:</p>
+<h4 id="time-stamping-service-interface"><a name="_Time-stamping_service_interface"></a>Time-stamping service interface</h4>
 <ul>
 <li>User: Libdigidocpp , DigiDoc4j</li>
 <li>Accessible with: HTTPS protocol</li>
@@ -1864,8 +1931,7 @@ Note that not all of the external base libraries are included in the component m
 </ul>
 </li>
 </ul>
-<h3 id="ocsp-service-interface"><a name="_OCSP_service_interface"></a>OCSP service interface</h3>
-<p>Interface’s properties:</p>
+<h4 id="ocsp-service-interface"><a name="_OCSP_service_interface"></a>OCSP service interface</h4>
 <ul>
 <li>User: DigiDoc4j, JDigiDoc, Libdigidocpp, CDigiDoc software libraries; DigiDocService web service</li>
 <li>Accessible with: HTTPS protocol</li>
@@ -1881,33 +1947,29 @@ Note that not all of the external base libraries are included in the component m
 <p>Documentation: <a href="https://tools.ietf.org/html/rfc6960">RFC6960</a></p>
 </li>
 </ul>
-<h3 id="id-card-owners-photo-repository-interface"><a name="_ID-card_owners’_photo"></a>ID-card owners’ photo repository interface</h3>
-<p>Interface’s properties:</p>
+<h4 id="id-card-owners-photo-repository-interface"><a name="_ID-card_owners’_photo"></a>ID-card owners’ photo repository interface</h4>
 <ul>
 <li>User: ID-card utility program</li>
 <li>Accessible with: HTTPS protocol</li>
 <li>Accessible from: <a href="https://sisene.www.eesti.ee/idportaal/portaal.idpilt">https://sisene.www.eesti.ee/idportaal/portaal.idpilt</a></li>
 </ul>
-<h3 id="certificates-renewal-service-interface-since-v312"><a name="_Certificate_renewal_service"></a>Certificate's renewal service interface (since v3.12)</h3>
-<p>Interface’s properties:</p>
-<ul>
-<li>User: ID-card utility program</li>
-<li>Accessible with: HTTP</li>
-<li>Accessible from: to be specified. </li>
-</ul>
-<h3 id="eestiee-e-mail-checking-service-interface"><a name="_Eesti.ee_e-mail_checking"></a>Eesti.ee e-mail checking service interface</h3>
-<p>Interface’s properties:</p>
+<h4 id="eestiee-e-mail-checking-service-interface"><a name="_Eesti.ee_e-mail_checking"></a>Eesti.ee e-mail checking service interface</h4>
 <ul>
 <li>User: ID-card utility program</li>
 <li>Accessible with: HTTPS</li>
 <li>Accessible from: <a href="https://sisene.www.eesti.ee/idportaal/postisysteem.naita_suunamised">https://sisene.www.eesti.ee/idportaal/postisysteem.naita_suunamised</a></li>
 </ul>
-<h3 id="mobile-id-validity-checking-service-interface"><a name="_Mobile-ID_validity_checking"></a>Mobile-ID validity checking service interface</h3>
-<p>Interface’s properties:</p>
+<h4 id="mobile-id-validity-checking-service-interface"><a name="_Mobile-ID_validity_checking"></a>Mobile-ID validity checking service interface</h4>
 <ul>
 <li>User: ID-card utility program</li>
 <li>Accessible with: HTTPS</li>
 <li>Accessible from: <a href="https://id.sk.ee/MIDInfoWS/">https://id.sk.ee/MIDInfoWS/</a></li>
+</ul>
+<h4 id="certificates-renewal-service-interface-since-v312x"><a name="_Certificate_renewal_service"></a>Certificate's renewal service interface (since v3.12.x)</h4>
+<ul>
+<li>User: ID-card utility program</li>
+<li>Accessible with: HTTP</li>
+<li>Accessible from: to be specified. </li>
 </ul>
 <p><a name="_deployment_model"></a></p>
 <h1 id="deployment-model"><a name="_tmp2">Deployment model</a></h1>
