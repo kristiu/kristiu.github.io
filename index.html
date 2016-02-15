@@ -1450,14 +1450,12 @@ Note that not all of the external base libraries are included in the component m
 </li>
 </ul>
 <p>Required:</p>
-<ol>
-<li>
-<p>Interfaces with cryptographic token’s drivers (described in chap. <a href="#_comp_drivers">Drivers</a>)</p>
+<ul>
+<li>Interfaces with cryptographic token’s drivers (described in chap. <a href="#_comp_drivers">Drivers</a>)<ul>
+<li>CNG/CAPI interface</li>
+</ul>
 </li>
-<li>
-<p>CNG/CAPI interface</p>
-</li>
-</ol>
+</ul>
 <h4 id="chrome-token-signing-extensions-interfaces"><a name="_Chrome-token-signing_extension’s_in"></a>Chrome-token-signing extension’s interfaces</h4>
 <p>Provided:</p>
 <ul>
@@ -1477,9 +1475,13 @@ Note that not all of the external base libraries are included in the component m
 </ul>
 </li>
 </ul>
-<p>Required:
-*   Interfaces with cryptographic token’s drivers (described in chap. <a href="#_comp_drivers">Drivers</a>)  
-    *   PKCS#11 interface</p>
+<p>Required:</p>
+<ul>
+<li>Interfaces with cryptographic token’s drivers (described in chap. <a href="#_comp_drivers">Drivers</a>)  <ul>
+<li>PKCS#11 interface</li>
+</ul>
+</li>
+</ul>
 <h3 id="web-authentication-components">Web authentication components</h3>
 <p>Authentication in web browsers is done with the browsers’ and operating systems’ native components. In case of authenticating in Firefox browser then Firefox pkcs11-module-loader JavaScript component is used to load the OpenSC PKCS#11 driver by the browser.</p>
 <p><img alt="" src="./index_files/web_auth.png" />  </p>
